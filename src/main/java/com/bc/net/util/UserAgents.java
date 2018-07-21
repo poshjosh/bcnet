@@ -19,6 +19,20 @@ public class UserAgents implements Serializable {
      * @param url
      * @param mobile
      * @return A randomly selected User-Agent String.
+     * @see #getAny(java.lang.String, boolean) 
+     */
+    public String any(String url, boolean mobile) {
+        try{
+            return getAny(new URL(url), mobile);
+        }catch(MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    /**
+     * @param url
+     * @param mobile
+     * @return A randomly selected User-Agent String.
      * @throws java.net.MalformedURLException
      * @see #getAny(java.net.URL, boolean) 
      */

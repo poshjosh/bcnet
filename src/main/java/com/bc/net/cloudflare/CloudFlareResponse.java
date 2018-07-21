@@ -108,7 +108,7 @@ public class CloudFlareResponse extends ResponseImpl {
                 try{
                     Thread.sleep(delay);
                 }catch(InterruptedException e) {
-                    LOG.log(Level.WARNING, "Thread.sleep("+delay+") threw Exception", e);
+                    LOG.log(Level.WARNING, "Thread["+Thread.currentThread().getName()+"]#sleep("+delay+") threw Exception", e);
                 }
             }
 
@@ -133,7 +133,7 @@ public class CloudFlareResponse extends ResponseImpl {
         }
     }
 
-    private String readAll(InputStream in) throws IOException {
+    protected String readAll(InputStream in) throws IOException {
         
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         
