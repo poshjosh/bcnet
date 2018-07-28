@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 import com.bc.net.RequestBuilder;
 import java.util.Objects;
+import java.util.logging.Level;
 
 /**
  * @author Chinomso Bassey Ikwuagwu on Jun 7, 2018 6:46:25 PM
@@ -166,7 +167,8 @@ public class RequestBuilderImpl implements Serializable, RequestBuilder {
         
         this.populateConnection(connection);
         
-        LOG.fine(() -> "Adding cookies to request: " + cookies);            
+        final Level level = cookies == null || cookies.isEmpty() ? Level.FINER :Level.FINE;
+        LOG.log(level, () -> "Adding cookies to request: " + cookies);            
         this.cookieProcessor.addCookiesToRequest(connection, cookies);
         
         if(method != null) {

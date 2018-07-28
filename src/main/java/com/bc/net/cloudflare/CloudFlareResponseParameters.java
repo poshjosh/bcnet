@@ -33,22 +33,22 @@ public class CloudFlareResponseParameters extends HashMap {
 
         LOG.log(Level.FINER, "#generate(URL, String)");
         
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByName("JavaScript");
+        final ScriptEngineManager manager = new ScriptEngineManager();
+        final ScriptEngine engine = manager.getEngineByName("JavaScript");
 
         LOG.log(Level.FINE, "Script Engine: {0}", engine);
         
         // вытаскиваем арифметику // Extract the arithmetics
-        Matcher operationSearch = OPERATION_PATTERN.matcher(responseText);
-        Matcher challengeSearch = CHALLENGE_PATTERN.matcher(responseText);
-        Matcher passSearch = PASS_PATTERN.matcher(responseText);
+        final Matcher operationSearch = OPERATION_PATTERN.matcher(responseText);
+        final Matcher challengeSearch = CHALLENGE_PATTERN.matcher(responseText);
+        final Matcher passSearch = PASS_PATTERN.matcher(responseText);
         if(!operationSearch.find() || !passSearch.find() || !challengeSearch.find()) {
             return; 
         }
 
-        String rawOperation = operationSearch.group(1); // операция
-        String challengePass = passSearch.group(1); // ключ
-        String challenge = challengeSearch.group(1); // хэш
+        final String rawOperation = operationSearch.group(1); // операция
+        final String challengePass = passSearch.group(1); // ключ
+        final String challenge = challengeSearch.group(1); // хэш
 
         if(LOG.isLoggable(Level.FINE)) {        
             LOG.log(Level.FINE, "Raw operation: {0}, challenge pass: {1}, challenge: {2}", 
@@ -56,15 +56,16 @@ public class CloudFlareResponseParameters extends HashMap {
         }
 
         // вырезаем присвоение переменной
-        String operation = rawOperation
+        final String operation = rawOperation
                 .replaceAll("a\\.value =(.+?) \\+ .+?;", "$1")
                 .replaceAll("\\s{3,}[a-z](?: = |\\.).+", "");
-        String js = operation.replace("\n", "");
+        
+        final String js = operation.replace("\n", "");
 
-        int result = ((Double)engine.eval(js)).intValue();
+        final int result = ((Double)engine.eval(js)).intValue();
 
-        // ответ на javascript challenge // Answer to the javascript challenge
-        String answer = String.valueOf(result + url.getHost().length()); 
+        // Answer to the javascript challenge
+        final String answer = String.valueOf(result + url.getHost().length()); 
 
         this.put("jschl_vc", challenge);
         this.put("pass", challengePass);
