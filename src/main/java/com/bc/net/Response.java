@@ -17,6 +17,7 @@
 package com.bc.net;
 
 import java.io.InputStream;
+import java.net.URLConnection;
 import java.util.List;
 
 /**
@@ -24,6 +25,8 @@ import java.util.List;
  */
 public interface Response {
 
+    URLConnection getUrlConnection();
+    
     InputStream getInputStream();
 
     int getCode();

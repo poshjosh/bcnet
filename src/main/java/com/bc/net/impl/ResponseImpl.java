@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
 
 /**
  * @author Chinomso Bassey Ikwuagwu on Jun 9, 2018 9:45:00 AM
@@ -33,6 +36,8 @@ import java.util.logging.Logger;
 public class ResponseImpl implements Response{
 
     private transient static final Logger LOG = Logger.getLogger(ResponseImpl.class.getName());
+    
+    private final URLConnection urlConnection;
 
     private final InputStream inputStream;
     
@@ -49,6 +54,7 @@ public class ResponseImpl implements Response{
     }
     
     public ResponseImpl(URLConnection urlConn, CookieProcessor cookieProcessor) throws IOException {
+        this.urlConnection = Objects.requireNonNull(urlConn);
         this.inputStream = this.getInputStream(urlConn);
         this.cookieProcessor = Objects.requireNonNull(cookieProcessor);
         if(urlConn instanceof HttpURLConnection) {
@@ -97,6 +103,21 @@ public class ResponseImpl implements Response{
                 in = httpConn.getErrorStream();
             }
         }
+        
+        if(in != null) {
+            
+            final String s = urlConn.getContentEncoding();
+            final String contentEncoding = s == null ? null : s.toLowerCase();
+            
+            if (null != contentEncoding && contentEncoding.contains("gzip")) {
+                
+                in = new GZIPInputStream (in);
+                
+            } else if (null != contentEncoding && contentEncoding.contains("deflate")){
+                
+                in = new InflaterInputStream(in, new Inflater(true));
+            }
+        }
 
 //log(Level.FINER, 
 //"Done getting input stream. Spent, time: {0}, memory: {1}", 
@@ -121,6 +142,11 @@ public class ResponseImpl implements Response{
             LOG.log(Level.WARNING, "Failed to retrieve response message", e);        
             return outputIfNone;
         }
+    }
+
+    @Override
+    public URLConnection getUrlConnection() {
+        return urlConnection;
     }
 
     @Override

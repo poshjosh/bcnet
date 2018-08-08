@@ -45,7 +45,7 @@ public interface RequestBuilder {
     }
     
     default Response response(URL url) throws IOException {
-        return this.url(url).response();
+        return this.url(url).response(); 
     }
     
     Response response() throws IOException;
